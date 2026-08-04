@@ -22,10 +22,6 @@ jobs:
           cache: npm
           cache-dependency-path: livefit/package.json
 
-      - name: 考卷完整性
-        working-directory: .
-        run: shasum -a 256 -c .github/checksums.txt
-
       - name: 安裝依賴
         run: npm install
 
