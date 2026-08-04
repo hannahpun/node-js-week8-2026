@@ -2,8 +2,8 @@
  * 等資料庫就緒（第一次啟動要跑 initdb，需要幾秒）
  * npm start 的最後一步，等到能連線才把終端機還給你
  */
-require('dotenv').config()
-const { Client } = require('pg')
+import 'dotenv/config'
+import { Client } from 'pg'
 
 const cfg = {
   host: process.env.DB_HOST || 'localhost',

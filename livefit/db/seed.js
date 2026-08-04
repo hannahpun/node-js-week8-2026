@@ -3,21 +3,19 @@
  * 規則：可重複執行（先清空、再種入資料），即使執行多次也不會有資料疊加的狀況。
  * 執行順序：一定要先 npm run migration:run（沒有資料表，就無法種資料）
  */
-const { dataSource } = require('./data-source')
+import { course, skill, user } from "../entities/index.ts";
+import { db, pool } from "./data-source.js";
 
 /** 清空：被 FK 指著的表最後刪（先刪 COURSE，再 USER / SKILL）。
- *  不用 clear()（TRUNCATE 會被 FK 擋）、不用 delete({})（TypeORM 拒絕空條件）。 */
+ *  不用 TRUNCATE（會被 FK 擋）；db.delete(table) 不帶 where 就是清空整張表。 */
 async function clearAll() {
-  for (const name of ['Course', 'User', 'Skill']) {
-    if (dataSource.hasMetadata(name)) {
-      await dataSource.createQueryBuilder().delete().from(name).execute()
-    }
+  for (const table of [course, user, skill]) {
+    await db.delete(table);
   }
 }
 
 async function main() {
-  await dataSource.initialize()
-  await clearAll()
+  await clearAll();
 
   // ======================================================================
   // TODO：依照任務內容的規格寫入資料
@@ -31,8 +29,63 @@ async function main() {
   //      courseRepo.save({ name: '...', user: 教練物件, skill: 技能物件 })
   // ======================================================================
 
-  console.log('🌱 seed 完成')
-  await dataSource.destroy()
+  const [workout, yoga, cycling] = await db
+    .insert(skill)
+    .values([{ name: "重訓" }, { name: "瑜珈" }, { name: "飛輪" }])
+    .returning();
+
+  const [hagrid, mei] = await db
+    .insert(user)
+    .values([
+      { name: "海格教練", email: "coach1@livefit.tw", role: "COACH" },
+      { name: "小美教練", email: "coach2@livefit.tw", role: "COACH" },
+    ])
+    .returning();
+
+  await db.insert(course).values([
+    {
+      name: "肌力入門班",
+      description: "躺著也很累",
+      startAt: new Date("2026-08-03T19:00:00+08:00"),
+      endAt: new Date("2026-08-03T20:00:00+08:00"),
+      maxParticipants: 16,
+      userId: hagrid.id,
+      skillId: workout.id,
+    },
+    {
+      name: "週末飛輪",
+      description: "週末飛輪",
+      startAt: new Date("2026-08-05T07:00:00+08:00"),
+      endAt: new Date("2026-08-05T08:00:00+08:00"),
+      maxParticipants: 8,
+      userId: hagrid.id,
+      skillId: cycling.id,
+    },
+    {
+      name: "晨間瑜珈",
+      description: "",
+      startAt: new Date("2026-08-06T19:00:00+08:00"),
+      endAt: new Date("2026-08-06T20:00:00+08:00"),
+      maxParticipants: 12,
+      userId: mei.id,
+      skillId: yoga.id,
+    },
+    {
+      name: "核心特訓",
+      description: "練出水蛇腰",
+      startAt: new Date("2026-08-08T10:00:00+08:00"),
+      endAt: new Date("2026-08-08T11:00:00+08:00"),
+      maxParticipants: 10,
+      userId: mei.id,
+      skillId: workout.id,
+    },
+  ]);
+
+  console.log("🌱 seed 完成");
+  await pool.end();
 }
 
-main().catch((e) => { console.error('seed 失敗：', e.message); process.exit(1) })
+main().catch((e) => {
+  console.error("seed 失敗：", e.message);
+  process.exit(1);
+});
