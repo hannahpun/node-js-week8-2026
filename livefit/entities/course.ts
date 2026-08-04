@@ -13,7 +13,7 @@ import { user } from "./user.ts";
 export const course = pgTable("COURSE", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: varchar("name", { length: 100 }).notNull().unique(),
-  description: text("description"),
+  description: text("description").notNull(),
   startAt: timestamp("start_at", { withTimezone: true }).notNull(),
   endAt: timestamp("end_at", { withTimezone: true }).notNull(),
   maxParticipants: integer("max_participants").notNull(),

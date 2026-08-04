@@ -15,6 +15,13 @@
       "when": 1785819959491,
       "tag": "0001_complex_mephisto",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1785821260342,
+      "tag": "0002_wealthy_peter_quill",
+      "breakpoints": true
     }
   ]
 }
