@@ -129,7 +129,7 @@ describe("任務 5｜種一點資料，證明表真的能用", () => {
   test("seed 可以重跑：再執行一次，筆數不翻倍", async () => {
     const before = (await db.query(`SELECT count(*)::int AS n FROM "STUDENT"`))
       .rows[0].n;
-    execSync("node db/seed.js", { stdio: "pipe" });
+    execSync("tsx db/seed.js", { stdio: "pipe" });
     const after = (await db.query(`SELECT count(*)::int AS n FROM "STUDENT"`))
       .rows[0].n;
     expect(after).toBe(before);

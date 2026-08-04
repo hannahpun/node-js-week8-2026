@@ -1,0 +1,1 @@
+ALTER TABLE "GRADE" ADD COLUMN "retake_score" integer;

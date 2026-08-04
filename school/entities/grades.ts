@@ -12,6 +12,7 @@ export const grades = pgTable("GRADE", {
   subjectId: uuid("subject_id")
     .references(() => subjects.id, { onDelete: "cascade" })
     .notNull(),
+  retakeScore: integer("retake_score"),
 });
 
 export const gradesRelations = relations(grades, ({ one }) => ({

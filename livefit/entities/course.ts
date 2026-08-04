@@ -30,6 +30,7 @@ export const course = pgTable("COURSE", {
     .defaultNow()
     .notNull()
     .$onUpdate(() => new Date()),
+  meetingUrl: varchar("meeting_url", { length: 2048 }),
 });
 
 export const courseRelations = relations(course, ({ one }) => ({
