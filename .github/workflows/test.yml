@@ -78,13 +78,13 @@ jobs:
           node scripts/wait-db.js
 
       - name: 執行你的 migrations
-        run: npm run migration:run
+        run: npm run db:migrate
 
       - name: 執行你的 seeder
-        run: npm run seed
+        run: npm run db:seed
 
       - name: 跑行為驗收
-        run: npx jest --runInBand --json --outputFile=jest-result.json
+        run: npm test -- --runInBand --json --outputFile=jest-result.json
 
       - name: 📊 驗收結果總表
         if: always()
